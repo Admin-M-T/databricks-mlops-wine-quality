@@ -1,0 +1,55 @@
+resources:
+  jobs:
+    wine_quality_mlops_bundle:
+      name: wine_quality_mlops_job
+
+      tasks:
+        - task_key: ingest
+          spark_python_task: 
+            python_file: ../src/01_ingest.py
+          environment_key: default
+
+        - task_key: validate
+          depends_on:
+            - task_key: ingest
+          spark_python_task:
+            python_file: ../src/02_validate.py  
+          environment_key: default
+        
+        - task_key: split
+          depends_on:
+            - task_key: validate
+          spark_python_task:
+            python_file: ../src/03_split.py
+          environment_key: default
+
+        - task_key: train
+          depends_on:
+            - task_key: split
+          spark_python_task:
+            python_file: ../src/04_train.py
+          environment_key: default
+
+        - task_key: evaluate
+          depends_on:
+            - task_key: train
+          spark_python_task:
+            python_file: ../src/05_evaluate.py
+          environment_key: default
+
+        - task_key: batch_score
+          depends_on:
+            - task_key: evaluate
+          spark_python_task:
+            python_file: ../src/06_batch_score.py
+          environment_key: default
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "2"
+            dependencies:
+              - scikit-learn
+              - mlflow
+              - pandas
+            
