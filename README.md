@@ -1,2 +1,2 @@
 # Databricks MLOPs Wine Quality Project
-Deployment using DABs
+Deployment using DABs Free Edition
